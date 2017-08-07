@@ -58,8 +58,9 @@ public class Post {
         return id;
     }
 
-    public void setId(long id) {
+    public boolean setId(long id) {
         this.id = id;
+        return id>0;
     }
 
     public long getGlobal_id() {

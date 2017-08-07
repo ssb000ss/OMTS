@@ -26,8 +26,6 @@ class TestUtils {
             cv.put(DBPostContract.DBPostEntry.COLUMN_REPOSTS,1);
             cv.put(DBPostContract.DBPostEntry.COLUMN_VIEWS,1);
 
-
-
             try {
 
                 sqLiteDatabase.beginTransaction();
