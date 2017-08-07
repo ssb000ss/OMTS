@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">OMTS</string>
+    <string name="get">get</string>
+    <integer name="com_vk_sdk_AppId">6134774</integer>
 </resources>
