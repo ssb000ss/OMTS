@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.gmail.ssb000ss.omts.adapters.PostAdapter;
+import com.gmail.ssb000ss.omts.adapters.ViewPagerAdapter;
 import com.gmail.ssb000ss.omts.db.DBPosts;
 import com.gmail.ssb000ss.omts.db.DBPostsHelper;
 import com.gmail.ssb000ss.omts.objects.Post;
@@ -35,22 +37,43 @@ public class MainActivity extends AppCompatActivity {
 
     private String[] scope = new String[]{VKScope.MESSAGES, VKScope.FRIENDS, VKScope.WALL};
 
-    RecyclerView recyclerView;
-    PostAdapter adapter;
+    //RecyclerView recyclerView;
+    //PostAdapter adapter;
     DBPostsHelper helper;
     DBPosts dbPosts;
     SQLiteDatabase database;
+
+    ViewPagerAdapter vp_adapter;
+    ViewPager viewPager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_viewpager);
         VKSdk.login(this, scope);
         helper = new DBPostsHelper(this);
         database = helper.getWritableDatabase();
         dbPosts = new DBPosts(database);
-        recyclerView = (RecyclerView) findViewById(R.id.rv_posts);
+        //recyclerView = (RecyclerView) findViewById(R.id.rv_posts);
+        viewPager=(ViewPager)findViewById(R.id.vp_posts);
+        //viewPager.OnAdapterChangeListener
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
     @Override
@@ -84,10 +107,11 @@ public class MainActivity extends AppCompatActivity {
                                 }
 
                             }
-                            dbPosts.deleteWord(25);
                             List<Post> list = dbPosts.getList();
-                            adapter = new PostAdapter(posts);
-                            recyclerView.setAdapter(adapter);
+                            vp_adapter=new ViewPagerAdapter(getSupportFragmentManager(),list);
+                            viewPager.setAdapter(vp_adapter);
+                            //adapter = new PostAdapter(posts);
+                            //recyclerView.setAdapter(adapter);
                             array.length();
                             posts.size();
                         } catch (JSONException e) {
