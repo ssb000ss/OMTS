@@ -5,15 +5,16 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.gmail.ssb000ss.omts.adapters.ViewPagerAdapter;
 import com.gmail.ssb000ss.omts.db.DAOPosts;
 import com.gmail.ssb000ss.omts.exceptions.PostException;
 import com.gmail.ssb000ss.omts.objects.Post;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
-import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
@@ -29,72 +30,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, ViewPagerAdapter.PostListener {
+
     public static final String TAG = Constans.TAG_MAINACTIVITY;
 
-    private String[] scope = new String[]{VKScope.WALL};
-
     DAOPosts daoPosts;
-
     ViewPagerAdapter vp_adapter;
+    CounterFab fab;
     ViewPager viewPager;
+    int offset = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_viewpager);
+        setContentView(R.layout.main);
         isLogged();
+        initViews();
 
-        daoPosts = new DAOPosts(this);
 
-        viewPager = (ViewPager) findViewById(R.id.vp_posts);
         List<Post> unread = daoPosts.getList().getUnReadList();
-        vp_adapter = new ViewPagerAdapter(getSupportFragmentManager(), unread);
+        vp_adapter = new ViewPagerAdapter(getSupportFragmentManager(), unread, this);
         viewPager.setAdapter(vp_adapter);
-
-
-        String token = "acc37a0fa6e6f592dd28fa81574e7b33c4c9822a107b11fca657a5063804f000ab7ae065e051cf0e363f4";
-        String id = "440603566";
-
-        final VKRequest request = initVkRequest(Constans.GROUP_ID, 0, 100);
-        request.executeWithListener(new VKRequest.VKRequestListener() {
-            @Override
-            public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
-                super.onProgress(progressType, bytesLoaded, bytesTotal);
-                Log.d(TAG, "onProgress: ");
-            }
-
-            @Override
-            public void onComplete(VKResponse response) {
-                super.onComplete(response);
-
-//                Log.d(TAG, "onComplete: ");
-//                //  VKList list = (VKList) response.parsedModel;
-//                //  list.get(0);
-//                try {
-//                    List list= parseJsonArray(response);
-//                    for (Object o:list) {
-//                        daoPosts.addPost((Post) o);
-//                    }
-//
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-            }
-        });
-
-        viewPager.setOnPageChangeListener(this);
-
-    }
-
-    private void isLogged() {
-        if (!VKSdk.isLoggedIn()) {
-            VKSdk.login(this, scope);
-        } else {
-            Toast.makeText(this, "Go go", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -136,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }
     }
 
-
     private VKRequest initVkRequest(int group_id, int offset, int count) {
         return new VKApiWall().get(VKParameters.from(
                 VKApiConst.OWNER_ID, "-" + group_id,
@@ -153,17 +109,20 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public void onPageSelected(int position) {
+        Log.d(TAG, "onPageSelected: position " + position);
         Post post = vp_adapter.getCurrentPost(position);
         try {
-            daoPosts.setReaded(post.getId());
+            if (!daoPosts.isReaded(post.getId())) {
+                daoPosts.setReaded(post.getId());
+                fab.setCount(daoPosts.getList().getCountUnreadList());
+                //    Log.d(TAG, "onPageSelected: " + daoPosts.getList().getCountUnreadList());
+            }
             vp_adapter.swapList(daoPosts.getList().getUnReadList());
-            Log.d(TAG, "onPageSelected: "+daoPosts.getList().getCountUnreadList());
-
         } catch (PostException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "onPageSelected: " + post.getText());
-        upUnreadList(100);
+        // Log.d(TAG, "onPageSelected: " + vp_adapter.getItemPosition(post));
+        //upUnreadList(100);
     }
 
     @Override
@@ -176,12 +135,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         while (true) {
 //            VKRequest request = initVkRequest(Constans.GROUP_ID, offset, 100);
 //            executeVkRequestWithInsert(request, daoPosts);
-            int count=daoPosts.getList().getCountUnreadList();
-            Log.d(TAG, "upUnread List: count  "+count);
-            if (count> size) {
+            int count = daoPosts.getList().getCountUnreadList();
+            Log.d(TAG, "upUnread List: count  " + count);
+            if (count > size) {
                 break;
-            }else {
-                Log.d(TAG, "upUnread List:offset= "+offset);
+            } else {
+                Log.d(TAG, "upUnread List:offset= " + offset);
                 break;
 
 //                offset=+100;
@@ -194,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             @Override
             public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
                 super.attemptFailed(request, attemptNumber, totalAttempts);
-                Log.d(TAG+"execute", "attemptFailed: ");
+                Log.d(TAG + "execute", "attemptFailed: ");
             }
 
             @Override
@@ -214,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 super.onComplete(response);
                 Log.d(TAG, "onComplete: ");
                 try {
-                    insertPost(parseJsonArray(response),daoPosts);
+                    insertPost(parseJsonArray(response), daoPosts);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -222,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         });
     }
 
-    private  List<Post> parseJsonArray(VKResponse response) throws JSONException {
+    private List<Post> parseJsonArray(VKResponse response) throws JSONException {
         JSONArray array = response.json.getJSONObject("response").getJSONArray("items");
         List<Post> posts = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
@@ -231,11 +190,64 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         return posts;
     }
 
-    public  boolean insertPost(List<Post> list,DAOPosts daoPosts){
-        for (Object o:list) {
+    public boolean insertPost(List<Post> list, DAOPosts daoPosts) {
+        for (Object o : list) {
             daoPosts.addPost((Post) o);
         }
         return true;
     }
 
+    private void initViews() {
+        daoPosts = new DAOPosts(this);
+        viewPager = (ViewPager) findViewById(R.id.vp_posts);
+        viewPager.setOnPageChangeListener(this);
+        fab = (CounterFab) findViewById(R.id.counter_fab);
+        fab.setCount(daoPosts.getList().getCountUnreadList());
+    }
+
+    private void isLogged() {
+        if (!VKSdk.isLoggedIn()) {
+            VKSdk.login(this, Constans.scope);
+        } else {
+            Toast.makeText(this, "Go go", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void onClickFab(View view) {
+        VKRequest request = initVkRequest(Constans.GROUP_ID, 10, 10);
+        request.executeSyncWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                try {
+                    List list=parseJsonArray(response);
+                    for (Object o:list) {
+                        daoPosts.addPost((Post)o);
+                    }
+                    fab.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            fab.setCount(daoPosts.getList().getCountUnreadList());
+                        }
+                    });
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public void setRead(Post post) {
+        try {
+            if (!post.isReaded()) {
+                daoPosts.setReaded(post.getId());
+                vp_adapter.notifyDataSetChanged();
+            }
+            } catch (PostException e) {
+            e.printStackTrace();
+        }
+    }
 }

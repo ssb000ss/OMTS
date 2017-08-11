@@ -4,33 +4,46 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.gmail.ssb000ss.omts.Constans;
+import com.gmail.ssb000ss.omts.MainActivity;
 import com.gmail.ssb000ss.omts.fragments.PostFragment;
 import com.gmail.ssb000ss.omts.objects.Post;
 
 import java.util.List;
 
-/**
- * Created by ssb000ss on 08.08.2017.
- */
-
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     List<Post> posts;
+    PostListener listener;
 
-    public List<Post> getPosts() {
-        return posts;
+    public interface PostListener {
+        void setRead(Post post);
     }
 
-    public ViewPagerAdapter(FragmentManager fm, List<Post> posts) {
+    public ViewPagerAdapter(FragmentManager fm, List<Post> posts,MainActivity context) {
         super(fm);
+        listener= (PostListener) context;
         this.posts = posts;
     }
 
+    // TODO: 11.08.2017 Надо исправить этот баг, он setRead не текущий а след объект
     @Override
     public Fragment getItem(int position) {
+        Log.d(Constans.TAG_MAINACTIVITY, showList());
+        //listener.setRead(posts.get(position));
+        Log.d(Constans.TAG_MAINACTIVITY, "getItem: "+posts.get(position).getId());
         return PostFragment.newInstance(posts.get(position));
+    }
+
+    private String showList(){
+        String result="";
+        for (int i = 0; i < posts.size(); i++) {
+            result=result+posts.get(i).getId()+'\n';
+        }
+        return result;
     }
 
     @Override
@@ -38,13 +51,12 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         return posts.size();
     }
 
-
     public void deletePost(int position) {
         posts.remove(position);
         notifyDataSetChanged();
     }
 
-    public Post getCurrentPost(int position){
+    public Post getCurrentPost(int position) {
         return posts.get(position);
     }
 

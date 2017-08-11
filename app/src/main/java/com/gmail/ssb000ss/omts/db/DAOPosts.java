@@ -9,6 +9,8 @@ import com.gmail.ssb000ss.omts.exceptions.PostException;
 import com.gmail.ssb000ss.omts.objects.Post;
 import com.gmail.ssb000ss.omts.objects.PostList;
 
+import java.util.List;
+
 public class DAOPosts {
     public static final String TAG = Constans.TAG_DAOPOSTS;
     private Context context;
@@ -46,6 +48,14 @@ public class DAOPosts {
             Log.d(TAG, "addPost: Post with this "+post.getId() +" already exists");
             return false;
         }
+    }
+
+    public int addListPost(List<Post> list){
+        int count=0;
+        for (Object o:list) {
+            if(addPost((Post) o))count++;
+        }
+        return count;
     }
 
     public boolean updatePost(long id, long date, String text, long likes, long reposts, long views, int readed) throws PostException {

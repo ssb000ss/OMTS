@@ -10,7 +10,6 @@ import com.gmail.ssb000ss.omts.R;
 import com.gmail.ssb000ss.omts.objects.Post;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     List<Post> list;
@@ -22,7 +21,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item,parent,false);
+                .inflate(R.layout.item_recycler_view,parent,false);
         return new PostViewHolder(v);
     }
 
