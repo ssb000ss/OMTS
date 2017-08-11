@@ -1,8 +1,10 @@
 package com.gmail.ssb000ss.omts.adapters;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.widget.Toast;
 
 import com.gmail.ssb000ss.omts.fragments.PostFragment;
 import com.gmail.ssb000ss.omts.objects.Post;
@@ -36,8 +38,21 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         return posts.size();
     }
 
-    public void deletePost(int position){
+
+    public void deletePost(int position) {
         posts.remove(position);
         notifyDataSetChanged();
     }
+
+    public Post getCurrentPost(int position){
+        return posts.get(position);
+    }
+
+    public void swapList(List<Post> newlist) {
+        posts = newlist;
+        if (posts != null) {
+            this.notifyDataSetChanged();
+        }
+    }
+
 }

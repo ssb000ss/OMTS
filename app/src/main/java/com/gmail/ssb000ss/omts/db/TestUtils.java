@@ -19,12 +19,13 @@ class TestUtils {
         } else {
             ContentValues cv = new ContentValues();
 
-            cv.put(DBPostContract.DBPostEntry.COLUMN_GLOBAL_ID, 1);
+            cv.put(DBPostContract.DBPostEntry.COLUMN_ID, 1);
             cv.put(DBPostContract.DBPostEntry.COLUMN_DATE, 1);
             cv.put(DBPostContract.DBPostEntry.COLUMN_TEXT,"test post");
             cv.put(DBPostContract.DBPostEntry.COLUMN_LIKES,1);
             cv.put(DBPostContract.DBPostEntry.COLUMN_REPOSTS,1);
             cv.put(DBPostContract.DBPostEntry.COLUMN_VIEWS,1);
+            cv.put(DBPostContract.DBPostEntry.COLUMN_READED,0);
 
             try {
 

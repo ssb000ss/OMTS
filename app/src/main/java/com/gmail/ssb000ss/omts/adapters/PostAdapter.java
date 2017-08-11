@@ -12,10 +12,6 @@ import com.gmail.ssb000ss.omts.objects.Post;
 import java.util.List;
 import java.util.zip.Inflater;
 
-/**
- * Created by ssb000ss on 07.08.2017.
- */
-
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     List<Post> list;
 

@@ -21,10 +21,6 @@ import java.util.Random;
 public class PostFragment extends Fragment {
 
 
-    static final String ARGUMENT_POST_TEXT = "arg_post_text";
-    static final String ARGUMENT_POST_LIKES = "arg_post_likes";
-    static final String ARGUMENT_POST_REPOSTS = "arg_post_likes";
-
     TextView tv_text;
     TextView tv_likes;
     TextView tv_reposts;
@@ -33,24 +29,23 @@ public class PostFragment extends Fragment {
     long likes;
     long reposts;
     String text;
+    Post post;
 
+    public PostFragment(Post post) {
+        this.post = post;
+    }
 
     public static PostFragment newInstance(Post post) {
-        PostFragment postFragment = new PostFragment();
-        Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_POST_TEXT, post.getText());
-        arguments.putLong(ARGUMENT_POST_LIKES, post.getLikes());
-        arguments.putLong(ARGUMENT_POST_REPOSTS, post.getReposts());
-        postFragment.setArguments(arguments);
+        PostFragment postFragment = new PostFragment(post);
         return postFragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        text = getArguments().getString(ARGUMENT_POST_TEXT);
-        likes = getArguments().getLong(ARGUMENT_POST_LIKES);
-        reposts = getArguments().getLong(ARGUMENT_POST_REPOSTS);
+        text=post.getText();
+        likes=post.getLikes();
+        reposts=post.getReposts();
         Random rnd = new Random();
         backColor = Color.argb(40, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
@@ -65,8 +60,8 @@ public class PostFragment extends Fragment {
         tv_reposts = (TextView) view.findViewById(R.id.tv_view_pager_reposts);
 
         tv_text.setText(text);
-        tv_likes.setText(String.valueOf(likes));
-        tv_reposts.setText(String.valueOf(reposts));
+        tv_likes.setText(likes+"");
+        tv_reposts.setText(reposts+"");
         linearLayout.setBackgroundColor(backColor);
         return view;
     }

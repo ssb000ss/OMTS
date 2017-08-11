@@ -22,21 +22,15 @@ public class DBPostsHelper extends SQLiteOpenHelper {
     //метод для создания бд в памяти смартфона, нужно создать только один раз в начале установки
     @Override
     public void onCreate(SQLiteDatabase db) {
-//        @Override
-//        public void onCreate(SQLiteDatabase db) {
-//            String CREATE_CONTACTS_TABLE = “CREATE TABLE ” + TABLE_SHOPS + “(”
-//            + KEY_ID + ” INTEGER PRIMARY KEY,” + KEY_NAME + ” TEXT,”
-//            + KEY_SH_ADDR + ” TEXT” + “)”;
-//            db.execSQL(CREATE_CONTACTS_TABLE);
-//        }
+
          String SQL_CREATE_WAITLIST_TABLE = "CREATE TABLE " + DBPostContract.DBPostEntry.TABLE_NAME + " (" +
-                DBPostContract.DBPostEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE," +
-                DBPostContract.DBPostEntry.COLUMN_GLOBAL_ID + " INTEGER NOT NULL UNIQUE, " +
+                DBPostContract.DBPostEntry.COLUMN_ID + " INTEGER PRIMARY KEY NOT NULL UNIQUE, " +
                 DBPostContract.DBPostEntry.COLUMN_DATE + " INTEGER NOT NULL, " +
                 DBPostContract.DBPostEntry.COLUMN_TEXT + " TEXT NOT NULL, " +
                 DBPostContract.DBPostEntry.COLUMN_LIKES + " INTEGER, " +
                 DBPostContract.DBPostEntry.COLUMN_REPOSTS+ " INTEGER, " +
-                DBPostContract.DBPostEntry.COLUMN_VIEWS+ " INTEGER )";
+                DBPostContract.DBPostEntry.COLUMN_VIEWS+ " INTEGER," +
+                DBPostContract.DBPostEntry.COLUMN_READED+ " INTEGER DEFAULT (0))";
         db.execSQL(SQL_CREATE_WAITLIST_TABLE);
     }
 

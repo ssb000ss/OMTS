@@ -7,50 +7,40 @@ import com.gmail.ssb000ss.omts.db.DBPostContract;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by ssb000ss on 03.08.2017.
- */
-
 public class Post {
     private long id;
-    private long global_id;
     private long date;
     private String text;
     private long likes;
     private long reposts;
     private long views;
+    private int readed;
 
 
     public Post(JSONObject object) {
         try {
-            this.global_id= object.getLong(DBPostContract.PostKey.global_id);
-            this.date= object.getLong(DBPostContract.PostKey.date);
-            this.text= object.getString(DBPostContract.PostKey.text);
-            this.likes=object.getJSONObject(DBPostContract.PostKey.likes).getLong(DBPostContract.PostKey.count);
-            this.reposts=object.getJSONObject(DBPostContract.PostKey.reposts).getLong(DBPostContract.PostKey.count);
-            this.views=object.getJSONObject(DBPostContract.PostKey.views).getLong(DBPostContract.PostKey.count);
+            this.id = object.getLong(DBPostContract.PostKey.id);
+            this.date = object.getLong(DBPostContract.PostKey.date);
+            this.text = object.getString(DBPostContract.PostKey.text);
+            this.likes = object.getJSONObject(DBPostContract.PostKey.likes).getLong(DBPostContract.PostKey.count);
+            this.reposts = object.getJSONObject(DBPostContract.PostKey.reposts).getLong(DBPostContract.PostKey.count);
+            this.views = object.getJSONObject(DBPostContract.PostKey.views).getLong(DBPostContract.PostKey.count);
+            this.readed = 0;
         } catch (JSONException e) {
-            Log.d("POST", "parseJSON: "+e.getMessage());
+            Log.d("POST", "parseJSON: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public Post(long id, long global_id, long date, String text, long likes, long reposts, long views) {
+
+    public Post(long id, long date, String text, long likes, long reposts, long views, int readed) {
         this.id = id;
-        this.global_id = global_id;
         this.date = date;
         this.text = text;
         this.likes = likes;
         this.reposts = reposts;
         this.views = views;
-    }
-    public Post(long global_id, long date, String text, long likes, long reposts, long views) {
-        this.global_id = global_id;
-        this.date = date;
-        this.text = text;
-        this.likes = likes;
-        this.reposts = reposts;
-        this.views = views;
+        this.readed = readed;
     }
 
 
@@ -58,17 +48,8 @@ public class Post {
         return id;
     }
 
-    public boolean setId(long id) {
+    public void setId(long id) {
         this.id = id;
-        return id>0;
-    }
-
-    public long getGlobal_id() {
-        return global_id;
-    }
-
-    public void setGlobal_id(long global_id) {
-        this.global_id = global_id;
     }
 
     public long getDate() {
@@ -111,5 +92,15 @@ public class Post {
         this.views = views;
     }
 
+    public boolean isReaded(){
+        return readed!=0;
+    }
+    public int getReaded() {
+        return readed;
+    }
 
+    public boolean setReaded(int readed) {
+        this.readed = readed;
+        return isReaded();
+    }
 }
